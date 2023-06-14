@@ -6,6 +6,9 @@ import {
   userPswCryptoMiddleware,
   userValidateMiddleware,
 } from '../middleware/user.middleware.js'
+import {
+  userTokenCheckMiddleware,
+} from '../middleware/auth.middleware.js'
 
 const router = express.Router()
 const PREFIX = '/user'
@@ -35,6 +38,15 @@ router.post(
   [
     userLoginCheckMiddleware,
     userController.login,
+  ],
+)
+
+// modify password
+router.post(
+  `${PREFIX}/${userEnum.UPDATE}`,
+  [
+    userTokenCheckMiddleware,
+    userController.modifyPassword,
   ],
 )
 
