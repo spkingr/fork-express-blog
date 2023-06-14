@@ -29,12 +29,13 @@ class UserController {
       code: 200,
       message: '登录成功',
       data: {
-        token: jwt.sign({ ...rest }, parsed!.JWT_SECRET, { expiresIn: '1h' }),
+        token: jwt.sign({ ...rest }, parsed!.JWT_SECRET, { expiresIn: '4h' }),
       },
     })
   }
 
   modifyPassword: Middleware = async (req, res, next) => {
+    // todo
     res.json({
       code: 200,
       message: '修改密码成功',
