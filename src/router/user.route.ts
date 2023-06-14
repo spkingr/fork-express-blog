@@ -2,6 +2,7 @@ import express from 'express'
 import { userController } from '../controller/user.controller.js'
 import {
   userCheckMiddleware,
+  userLoginCheckMiddleware,
   userPswCryptoMiddleware,
   userValidateMiddleware,
 } from '../middleware/user.middleware.js'
@@ -25,6 +26,15 @@ router.post(
     userCheckMiddleware,
     userPswCryptoMiddleware,
     userController.register,
+  ],
+)
+
+// login
+router.post(
+  `${PREFIX}/${userEnum.LOGIN}`,
+  [
+    userLoginCheckMiddleware,
+    userController.login,
   ],
 )
 

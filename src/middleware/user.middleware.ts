@@ -19,10 +19,24 @@ export const userValidateMiddleware: Middleware = (req, res, next) => {
 /* 数据合理性检查 */
 export const userCheckMiddleware: Middleware = async (req, res, next) => {
   const { username } = req.body
-  // 数据是否重复
   const user = await userService.getUser({ username })
   if (user) {
     const error = userError[UserErrorEnum.EXISTS]
+    return next(error)
+  }
+  next()
+}
+
+/* 登陆检查用户是否存在 */
+export const userLoginCheckMiddleware: Middleware = async (req, res, next) => {
+  const { username, password } = req.body
+  const user = await userService.getUser({ username })
+  if (!user) {
+    const error = userError[UserErrorEnum.ERROR_INFO]
+    return next(error)
+  }
+  if (CryptoJS.SHA256(password).toString() !== user.password) {
+    const error = userError[UserErrorEnum.ERROR_INFO]
     return next(error)
   }
   next()

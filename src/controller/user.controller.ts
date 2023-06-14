@@ -8,13 +8,20 @@ class UserController {
     const user = req.body
     // 2.调用service层的方法 数据库操作
     const data = await userService.createUser(user)
-    const result = {
+    // 3.返回数据
+    res.json({
       code: 200,
       message: '注册成功',
       data,
-    }
-    // 3.返回数据
-    res.json(result)
+    })
+  }
+
+  // 挂一个login方法
+  login: Middleware = async (req, res, next) => {
+    res.json({
+      code: 200,
+      message: '登录成功',
+    })
   }
 }
 

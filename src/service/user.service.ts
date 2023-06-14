@@ -4,7 +4,7 @@ import { User } from '../model/user.model.js'
 class UserService {
   async createUser(user: UserAttributes) {
     // 插入数据
-    const { username, password, is_admin } = user
+    const { username, password, is_admin = 0 } = user
     const res = await User.create({
       username,
       password,
@@ -23,8 +23,8 @@ class UserService {
       Object.assign(whereOpt, { is_admin })
 
     const res = await User.findOne({
-      attributes: ['id', 'username', 'is_admin'],
-      where: whereOpt,
+      attributes: ['id', 'username', 'password', 'is_admin'], // 查询字段
+      where: whereOpt, // 查询条件
     })
 
     return res ? res.dataValues : null

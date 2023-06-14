@@ -3,6 +3,7 @@
 export enum UserErrorEnum {
   REQUIRED = 10001,
   EXISTS = 10002,
+  ERROR_INFO = 10003,
 }
 
 export const userError = {
@@ -13,5 +14,9 @@ export const userError = {
   [UserErrorEnum.EXISTS]: {
     code: UserErrorEnum.EXISTS,
     message: '用户名已存在',
+  },
+  [UserErrorEnum.ERROR_INFO]: {
+    code: UserErrorEnum.ERROR_INFO,
+    message: '用户名或密码错误',
   },
 }
