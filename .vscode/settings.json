@@ -1,6 +1,6 @@
 {
   "workbench.productIconTheme": "icons-carbon",
-  "workbench.iconTheme": "file-icons",
+  "workbench.iconTheme": "material-icon-theme",
   "workbench.fontAliasing": "antialiased",
   "editor.fontFamily": "Input Mono, Fira Code, monospace",
   "editor.fontLigatures": "'ss01', 'ss02', 'ss03', 'ss06', 'zero'",

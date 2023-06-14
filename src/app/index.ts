@@ -1,9 +1,10 @@
 import express from 'express'
 import { userRouter } from '../router/user.route.js'
+import { errorHandlerMiddleware } from './errorhandler.js'
 
 const app = express()
 
-// base
+// base--------------------------------------------------
 // for parsing application/json
 app.use(express.json())
 // for parsing application/x-www-form-urlencoded
@@ -16,9 +17,12 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   next()
 })
+// --------------------------------------------------------
 
 // Routes
 app.use(userRouter)
+// Error Handler
+app.use(errorHandlerMiddleware)
 
 // export
 export default app
