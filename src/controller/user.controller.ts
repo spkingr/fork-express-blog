@@ -24,6 +24,18 @@ class UserController {
       message: '登录成功',
       data: {
         token: jwt.sign({ ...rest }, parsed!.JWT_SECRET, { expiresIn: '4h' }),
+        refreshToken: jwt.sign({ ...rest, __sign__: 'refreshToken' }, parsed!.JWT_SECRET, { expiresIn: '7d' }),
+      },
+    })
+  }
+
+  refresh: Middleware = async (req, res, next) => {
+    const { token } = req.user
+    res.json({
+      code: 200,
+      message: '刷新token成功',
+      data: {
+        token,
       },
     })
   }

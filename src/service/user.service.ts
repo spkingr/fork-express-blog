@@ -1,3 +1,4 @@
+import CryptoJS from 'crypto-js'
 import type { UserAttributes } from '../model/user.model.js'
 import { User } from '../model/user.model.js'
 
@@ -25,6 +26,7 @@ class UserService {
 
   async modifyUser({ username, password, id, is_admin }: Partial<UserAttributes>) {
     const info = this.generateInfo({ username, password, id, is_admin })
+    info.password = CryptoJS.SHA256(info.password!).toString() // 这一步可能会出error
     const res = await User.update(
       { ...info },
       {
@@ -35,16 +37,16 @@ class UserService {
   }
 
   generateInfo({ id, username, password, is_admin }: Partial<UserAttributes>) {
-    const whereOpt = {}
+    const info: Partial<UserAttributes> = {}
     if (username)
-      Object.assign(whereOpt, { username })
+      Object.assign(info, { username })
     if (password)
-      Object.assign(whereOpt, { password })
+      Object.assign(info, { password })
     if (is_admin)
-      Object.assign(whereOpt, { is_admin })
+      Object.assign(info, { is_admin })
     if (id)
-      Object.assign(whereOpt, { id })
-    return whereOpt
+      Object.assign(info, { id })
+    return info
   }
 }
 

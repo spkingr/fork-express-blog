@@ -8,6 +8,7 @@ import {
 } from '../middleware/user.middleware.js'
 import {
   userTokenCheckMiddleware,
+  userTokenRefreshMiddleware,
 } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
@@ -17,6 +18,7 @@ enum userEnum {
   REGISTER = 'register',
   LOGIN = 'login',
   UPDATE = 'update',
+  REFRESH = 'refresh',
 }
 
 // register
@@ -36,6 +38,15 @@ router.post(
   [
     userLoginCheckMiddleware,
     userController.login,
+  ],
+)
+
+// refresh
+router.post(
+  `${PREFIX}/${userEnum.REFRESH}`,
+  [
+    userTokenRefreshMiddleware,
+    userController.refresh,
   ],
 )
 
