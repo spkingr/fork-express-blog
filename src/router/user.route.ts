@@ -15,9 +15,7 @@ const PREFIX = '/user'
 
 enum userEnum {
   REGISTER = 'register',
-  USERINFO = 'userInfo',
   LOGIN = 'login',
-  LOGOUT = 'logout',
   UPDATE = 'update',
 }
 

@@ -5,6 +5,7 @@ import { parsed } from '../config/index.js'
 
 /* 用户token校验 */
 export const userTokenCheckMiddleware: Middleware = (req, res, next) => {
+  // 获取token 默认是Bearer token
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) {
     const error = authError[AuthErrorEnum.ERROR_TOKEN]

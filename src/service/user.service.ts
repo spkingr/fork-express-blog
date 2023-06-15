@@ -13,7 +13,28 @@ class UserService {
     return res.dataValues
   }
 
-  async getUser({ username, password, is_admin }: Partial<UserAttributes>) {
+  async getUser({ username, password, id, is_admin }: Partial<UserAttributes>) {
+    const whereOpt = this.generateInfo({ username, password, id, is_admin })
+    const res = await User.findOne({
+      attributes: ['id', 'username', 'password', 'is_admin'], // 查询字段
+      where: whereOpt, // 查询条件
+    })
+
+    return res ? res.dataValues : null
+  }
+
+  async modifyUser({ username, password, id, is_admin }: Partial<UserAttributes>) {
+    const info = this.generateInfo({ username, password, id, is_admin })
+    const res = await User.update(
+      { ...info },
+      {
+        where: { id },
+      },
+    )
+    return res[0]
+  }
+
+  generateInfo({ id, username, password, is_admin }: Partial<UserAttributes>) {
     const whereOpt = {}
     if (username)
       Object.assign(whereOpt, { username })
@@ -21,13 +42,9 @@ class UserService {
       Object.assign(whereOpt, { password })
     if (is_admin)
       Object.assign(whereOpt, { is_admin })
-
-    const res = await User.findOne({
-      attributes: ['id', 'username', 'password', 'is_admin'], // 查询字段
-      where: whereOpt, // 查询条件
-    })
-
-    return res ? res.dataValues : null
+    if (id)
+      Object.assign(whereOpt, { id })
+    return whereOpt
   }
 }
 

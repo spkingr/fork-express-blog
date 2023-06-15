@@ -2,15 +2,12 @@ import jwt from 'jsonwebtoken'
 import type { Middleware } from '../types'
 import { userService } from '../service/user.service.js'
 import { parsed } from '../config/index.js'
+import { UserErrorEnum, userError } from '../error/user.error.js'
 
 class UserController {
-  // 挂一个register方法
   register: Middleware = async (req, res, next) => {
-    // 1.获取数据
     const user = req.body
-    // 2.调用service层的方法 数据库操作
     const data = await userService.createUser(user)
-    // 3.返回数据
     res.json({
       code: 200,
       message: '注册成功',
@@ -18,11 +15,8 @@ class UserController {
     })
   }
 
-  // 挂一个login方法
   login: Middleware = async (req, res, next) => {
-    // 获取用户信息
     const { username } = req.body
-    // 调用service层的方法 数据库操作
     const data = await userService.getUser({ username })
     const { password, ...rest } = data
     res.json({
@@ -35,7 +29,14 @@ class UserController {
   }
 
   modifyPassword: Middleware = async (req, res, next) => {
-    // todo
+    const { id, password } = req.body
+    if (!id || !password)
+      return next(userError[UserErrorEnum.REQUIRED])
+
+    const result = await userService.modifyUser({ id, password })
+    // result是受影响的行数, 如果没有修改成功, 则返回0
+    if (result <= 0)
+      return next(userError[UserErrorEnum.ERROR_MODIFY])
     res.json({
       code: 200,
       message: '修改密码成功',
