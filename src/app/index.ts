@@ -14,6 +14,11 @@ app.use(express.urlencoded({ extended: true }))
 // for static file
 app.use(express.static('public'))
 
+// Hello World!
+app.get('/', (req, res) => {
+  res.send('<h1>hello world!</H1>')
+})
+
 // Routes
 app.use(userRouter)
 // Error Handler

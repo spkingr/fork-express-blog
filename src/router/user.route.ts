@@ -1,5 +1,7 @@
 import express from 'express'
-import { userController } from '../controller/user.controller.js'
+import {
+  userController,
+} from '../controller/user.controller.js'
 import {
   userCheckMiddleware,
   userLoginCheckMiddleware,
@@ -20,6 +22,10 @@ enum userEnum {
   UPDATE = 'update',
   REFRESH = 'refresh',
 }
+
+router.post('/user/text', (req, res) => {
+  res.send('user')
+})
 
 // register
 /**
