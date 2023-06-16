@@ -274,5 +274,6 @@
       "color": "#fff",
       "backgroundColor": "#007"
     }
-  ]
+  ],
+  "liveServer.settings.port": 5501
 }
