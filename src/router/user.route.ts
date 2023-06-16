@@ -14,7 +14,7 @@ import {
 } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
-const PREFIX = 'user'
+const PREFIX = '/user'
 
 enum userEnum {
   REGISTER = 'register',
@@ -23,9 +23,9 @@ enum userEnum {
   REFRESH = 'refresh',
 }
 
-router.post('/user/text', (req, res) => {
-  res.send('user')
-})
+// router.post('/user/text', (req, res) => {
+//   res.send('user')
+// })
 
 // register
 /**

@@ -1,12 +1,17 @@
+// 写一个调试配置
 {
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch Program",
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "skipFiles": ["<node_internals>/**"],
-      "program": "src/main.ts"
+      "program": "${workspaceFolder}/src/main.ts",
+      "cwd": "${workspaceFolder}",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     }
   ]
 }
+// 然后按F5就可以开始调试了

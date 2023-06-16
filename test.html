@@ -8,7 +8,7 @@
 </head>
 <body>
   <script>
-    fetch('http://localhost:8080/user/text', { method: 'post' })
+    fetch('http://localhost:8080/user/login', { method: 'post' })
       .then(response => response.json())
       .then(data => console.warn(data))
   </script>
