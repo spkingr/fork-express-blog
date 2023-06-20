@@ -55,6 +55,24 @@ class UserController {
       data: {},
     })
   }
+
+  getUserInfo: Middleware = async (req, res, next) => {
+    const { id } = req.user
+    const data = await userService.getUserInfo({ id })
+    res.json({
+      code: 200,
+      message: '获取用户信息成功',
+      data,
+    })
+  }
+
+  test: Middleware = async (req, res, next) => {
+    res.json({
+      code: 200,
+      message: 'test success',
+      data: {},
+    })
+  }
 }
 
 export const userController = new UserController()

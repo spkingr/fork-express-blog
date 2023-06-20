@@ -1,17 +1,19 @@
 import { Sequelize } from 'sequelize'
 import { parsed } from '../config/index.js'
 
-const { MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB } = parsed!
+function setupSequelize() {
+  const { MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB } = parsed!
 
-const seq = new Sequelize(MYSQL_DB, MYSQL_USER, MYSQL_PASSWORD, {
-  host: MYSQL_HOST,
-  port: Number(MYSQL_PORT),
-  dialect: 'mysql',
-});
+  return new Sequelize(MYSQL_DB, MYSQL_USER, MYSQL_PASSWORD, {
+    host: MYSQL_HOST,
+    port: Number(MYSQL_PORT),
+    dialect: 'mysql',
+  })
+}
+const seq = setupSequelize()
 
-(async () => {
-  await seq.authenticate()
-  console.warn('mysql connect ok')
-})()
+// 测试连接
+await seq.authenticate()
+console.warn('mysql connect ok')
 
 export { seq }

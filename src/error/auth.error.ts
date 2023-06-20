@@ -1,9 +1,9 @@
 /* 身份信息都是 200xx */
 
 export enum AuthErrorEnum {
-  ERROR_TOKEN = 20001,
+  ERROR_TOKEN = 401,
   EMPTY_TRFRESH_TOKEN = 20002,
-  ERROR_REFRESH_TOKEN = 20003,
+  ERROR_REFRESH_TOKEN = 402,
 }
 
 export const authError = {

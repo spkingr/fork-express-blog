@@ -24,6 +24,14 @@ class UserService {
     return res ? res.dataValues : null
   }
 
+  async getUserInfo({ id }: Partial<UserAttributes>) {
+    const res = await User.findOne({ // 查询所有字段
+      where: { id }, // 查询条件
+    })
+
+    return res ? res.dataValues : null
+  }
+
   async modifyUser({ username, password, id, is_admin }: Partial<UserAttributes>) {
     const info = this.generateInfo({ username, password, id, is_admin })
     info.password = CryptoJS.SHA256(info.password!).toString() // 这一步可能会出error

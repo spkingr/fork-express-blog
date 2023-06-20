@@ -21,11 +21,9 @@ enum userEnum {
   LOGIN = 'login',
   UPDATE = 'update',
   REFRESH = 'refresh',
+  GET_USERINFO = 'getuserinfo',
+  TEST = 'test',
 }
-
-// router.post('/user/text', (req, res) => {
-//   res.send('user')
-// })
 
 // register
 /**
@@ -87,6 +85,30 @@ router.post(
   [
     userTokenCheckMiddleware,
     userController.modifyPassword,
+  ],
+)
+
+// get user info
+/**
+ * @params {string} id 用户id
+ * @returns {object} 返回用户信息
+ * @description 用于获取用户信息
+ * @description 需要登录后才能获取用户信息
+*/
+router.get(
+  `${PREFIX}/${userEnum.GET_USERINFO}`,
+  [
+    userTokenCheckMiddleware,
+    userController.getUserInfo,
+  ],
+)
+
+// test
+router.post(
+  `${PREFIX}/${userEnum.TEST}`,
+  [
+    userTokenCheckMiddleware,
+    userController.test,
   ],
 )
 
