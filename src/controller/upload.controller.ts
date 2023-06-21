@@ -10,6 +10,12 @@ enum uploadFile {
   ARTICLE = 'article',
 }
 
+// todo
+// 1. 前端分片文件哈希计算
+// 2. 断点续传
+// 3. 秒传
+// 4. 错误重传
+
 class UploadController {
   public allowedAssetsType = ['.jpeg', '.jpg', '.png', '.gif', '.webp']
   public allowedArticleType = ['.md']
