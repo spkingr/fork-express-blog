@@ -32,10 +32,10 @@ class UploadController {
 
   private currentType: uploadFile = uploadFile.ASSETS
 
-  uploadImage: Middleware = async (req, res, next) => {
+  uploadAssets: Middleware = async (req, res, next) => {
     const fileInfo = req.body
     const file = req.files!.file as fileUpload.UploadedFile
-    // 文件名解析
+
     const parsedPath = path.parse(fileInfo.name)
 
     // 检查文件类型
@@ -68,8 +68,9 @@ class UploadController {
   uploadArticle: Middleware = async (req, res, next) => {
     const fileInfo = req.body
     const file = req.files!.file as fileUpload.UploadedFile
-    // 文件名解析
+
     const parsedPath = path.parse(fileInfo.name)
+
     // 检查文件类型
     if (!this.extnameCheck(parsedPath.ext, uploadFile.ARTICLE))
       return next(uploadError[UploadErrorEnum.ERROR_TYPE])
@@ -99,14 +100,18 @@ class UploadController {
 
   merge: Middleware = async (req, res, next) => {
     const { name } = req.body
-    // 文件名解析
     const parsedPath = path.parse(name)
     // 1. 区分文件类型
     const { sign, path: filePath } = this.getUploadabpout()
     // 2. 找到需要合并的文件 并读取到全部文件信息
     const dir = path.join(filePath, parsedPath.name) // /public/[filetype]/[filename] 之前的临时文件
+    try {
+      fs.accessSync(dir)
+    }
+    catch (err) {
+      return next(uploadError[UploadErrorEnum.ERROR_FILE_NOT_FOUND])
+    }
     const files = fs.readdirSync(dir)
-    // 如果没有则返回错误
     if (!files.length)
       return next(uploadError[UploadErrorEnum.ERROR_FILE_NOT_FOUND])
     // 如果有则合并 并放入 /public/images/[filename]
@@ -138,9 +143,9 @@ class UploadController {
   // utils ------------------------------------------
   extnameCheck(extname: string, type: uploadFile): boolean {
     if (type === uploadFile.ASSETS)
-      return !!this.allowedAssetsType.find(ext => ext === extname.toLocaleLowerCase())
+      return this.allowedAssetsType.includes(extname.toLocaleLowerCase())
     if (type === uploadFile.ARTICLE)
-      return !!this.allowedArticleType.find(ext => ext === extname.toLocaleLowerCase())
+      return this.allowedArticleType.includes(extname.toLocaleLowerCase())
     return false
   }
 

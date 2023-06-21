@@ -6,19 +6,33 @@ const router = express.Router()
 const PREFIX = '/upload'
 
 enum uploadEnum {
-  IMAGE = 'image',
+  ASSETS = 'assets',
   ARTICLE = 'article',
   MERGE = 'merge',
 }
 
+/**
+ * @params {string} name
+ * @params {number} size
+ * @params {number} index
+ * @params {number} total
+ * @params {string} type
+ */
 router.post(
-  `${PREFIX}/${uploadEnum.IMAGE}`,
+  `${PREFIX}/${uploadEnum.ASSETS}`,
   [
     userTokenCheckMiddleware,
-    uploadController.uploadImage,
+    uploadController.uploadAssets,
   ],
 )
 
+/**
+ * @params {string} name
+ * @params {number} size
+ * @params {number} index
+ * @params {number} total
+ * @params {string} type
+ */
 router.post(
   `${PREFIX}/${uploadEnum.ARTICLE}`,
   [
@@ -27,6 +41,10 @@ router.post(
   ],
 )
 
+/**
+ * @params {string} name
+ * @params {string} type
+ */
 router.post(
   `${PREFIX}/${uploadEnum.MERGE}`,
   [
