@@ -5,6 +5,8 @@ export enum UserErrorEnum {
   EXISTS = 10002,
   ERROR_INFO = 10003,
   ERROR_MODIFY = 10004,
+  LENGTH = 10005,
+  PSWLENGTH = 10006,
 }
 
 export const userError = {
@@ -23,5 +25,13 @@ export const userError = {
   [UserErrorEnum.ERROR_MODIFY]: {
     code: UserErrorEnum.ERROR_MODIFY,
     message: '用户信息修改失败',
+  },
+  [UserErrorEnum.LENGTH]: {
+    code: UserErrorEnum.LENGTH,
+    message: '用户名长度为2-10位',
+  },
+  [UserErrorEnum.PSWLENGTH]: {
+    code: UserErrorEnum.PSWLENGTH,
+    message: '密码长度为6-16位',
   },
 }

@@ -49,6 +49,9 @@ dependencies:
   express-fileupload:
     specifier: ^1.4.0
     version: 1.4.0
+  express-validator:
+    specifier: ^7.0.1
+    version: 7.0.1
   jsonwebtoken:
     specifier: ^9.0.0
     version: 9.0.0
@@ -1564,6 +1567,14 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       busboy: 1.6.0
+    dev: false
+
+  /express-validator@7.0.1:
+    resolution: {integrity: sha512-oB+z9QOzQIE8FnlINqyIFA8eIckahC6qc8KtqLdLJcU3/phVyuhXH3bA4qzcrhme+1RYaCSwrq+TlZ/kAKIARA==}
+    engines: {node: '>= 8.0.0'}
+    dependencies:
+      lodash: 4.17.21
+      validator: 13.9.0
     dev: false
 
   /express@4.18.2:

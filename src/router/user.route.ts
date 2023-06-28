@@ -35,7 +35,7 @@ enum userEnum {
 router.post(
   `${PREFIX}/${userEnum.REGISTER}`,
   [
-    userValidateMiddleware,
+    ...userValidateMiddleware,
     userCheckMiddleware,
     userPswCryptoMiddleware,
     userController.register,
@@ -51,6 +51,7 @@ router.post(
 router.post(
   `${PREFIX}/${userEnum.LOGIN}`,
   [
+    ...userValidateMiddleware,
     userLoginCheckMiddleware,
     userController.login,
   ],
