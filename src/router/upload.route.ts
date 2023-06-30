@@ -1,6 +1,5 @@
 import express from 'express'
 import { uploadController } from '../controller/upload.controller.js'
-import { userTokenCheckMiddleware } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
 const PREFIX = '/upload'
@@ -21,7 +20,7 @@ enum uploadEnum {
 router.post(
   `${PREFIX}/${uploadEnum.ASSETS}`,
   [
-    userTokenCheckMiddleware,
+    // userTokenCheckMiddleware,
     uploadController.uploadAssets,
   ],
 )
@@ -36,7 +35,7 @@ router.post(
 router.post(
   `${PREFIX}/${uploadEnum.ARTICLE}`,
   [
-    userTokenCheckMiddleware,
+    // userTokenCheckMiddleware,
     uploadController.uploadArticle,
   ],
 )
@@ -48,7 +47,7 @@ router.post(
 router.post(
   `${PREFIX}/${uploadEnum.MERGE}`,
   [
-    userTokenCheckMiddleware,
+    // userTokenCheckMiddleware,
     uploadController.merge,
   ],
 )

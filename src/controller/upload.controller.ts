@@ -17,7 +17,7 @@ enum uploadFile {
 // 4. 错误重传
 
 class UploadController {
-  public allowedAssetsType = ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+  public allowedAssetsType = ['.jpeg', '.jpg', '.png', '.gif', '.webp', '.mp4']
   public allowedArticleType = ['.md']
 
   public IMAGE_SIZE_LIMIT = 1024 * 1024 * 10
@@ -32,10 +32,11 @@ class UploadController {
 
   private currentType: uploadFile = uploadFile.ASSETS
 
-  uploadAssets: Middleware = async (req, res, next) => {
+  writeFileToPublic: Middleware = async (req, res, next) => {
     const fileInfo = req.body
     const file = req.files!.file as fileUpload.UploadedFile
 
+    // 获取文件信息
     const parsedPath = path.parse(fileInfo.name)
 
     // 检查文件类型
@@ -45,55 +46,45 @@ class UploadController {
     if (!this.sizeCheck(fileInfo.size, uploadFile.ASSETS))
       return next(uploadError[UploadErrorEnum.ERROR_SIZE])
 
+    // 获取path和sign
+    const { path: PATH, sign: SIGN } = this.getUploadabout()
+
     // 检查是否存在文件夹 /public/images/[filename] 不存在则创建
-    const dir = path.join(this.ASSETS_PATH, parsedPath.name)
+    const dir = path.join(PATH, parsedPath.name)
     if (!fs.existsSync(dir))
-      fs.mkdirSync(dir, { recursive: true }) // 多级创建
+      fs.mkdirSync(dir, { recursive: true }) // 递归创建文件夹
 
     // 将传入的文件写入到 /public/image/[filename]/[filename][index] 中
-    const filePath = path.join(dir, `${parsedPath.name}${this.assetsChunksign}${fileInfo.index}`)
+    const filePath = path.join(dir, `${parsedPath.name}${SIGN}${fileInfo.index}`)
     fs.writeFileSync(filePath, file.data)
+  }
 
-    // 返回成功
+  uploadAssets: Middleware = async (req, res, next) => {
+    const fileInfo = req.body
     this.currentType = uploadFile.ASSETS
+    // 写入文件碎片
+    await this.writeFileToPublic(req, res, next)
+    // 返回成功
     res.json({
       code: 200,
       message: '上传成功',
       data: {
-        message: `chunk${fileInfo.index}[上传][写入]成功`,
+        message: `静态文件chunk${fileInfo.index}[上传][写入]成功`,
       },
     })
   }
 
   uploadArticle: Middleware = async (req, res, next) => {
     const fileInfo = req.body
-    const file = req.files!.file as fileUpload.UploadedFile
-
-    const parsedPath = path.parse(fileInfo.name)
-
-    // 检查文件类型
-    if (!this.extnameCheck(parsedPath.ext, uploadFile.ARTICLE))
-      return next(uploadError[UploadErrorEnum.ERROR_TYPE])
-    // 检查文件大小
-    if (!this.sizeCheck(fileInfo.size, uploadFile.ARTICLE))
-      return next(uploadError[UploadErrorEnum.ERROR_SIZE])
-
-    // 检查是否存在文件夹 /public/images/[filename] 不存在则创建
-    const dir = path.join(this.ARTICLE_PATH, parsedPath.name)
-    if (!fs.existsSync(dir))
-      fs.mkdirSync(dir, { recursive: true }) // 多级创建
-
-    // 将传入的文件写入到 /public/image/[filename]/[filename][index] 中
-    const filePath = path.join(dir, `${parsedPath.name}${this.articleChunksign}${fileInfo.index}`)
-    fs.writeFileSync(filePath, file.data)
-
+    this.currentType = uploadFile.ASSETS
+    // 写入文件碎片
+    await this.writeFileToPublic(req, res, next)
     // 返回成功
-    this.currentType = uploadFile.ARTICLE
     res.json({
       code: 200,
       message: '上传成功',
       data: {
-        message: `chunk${fileInfo.index}[上传][写入]成功`,
+        message: `文章chunk${fileInfo.index}[上传][写入]成功`,
       },
     })
   }
@@ -102,9 +93,9 @@ class UploadController {
     const { name } = req.body
     const parsedPath = path.parse(name)
     // 1. 区分文件类型
-    const { sign, path: filePath } = this.getUploadabpout()
+    const { sign: SIGN, path: PATH } = this.getUploadabout()
     // 2. 找到需要合并的文件 并读取到全部文件信息
-    const dir = path.join(filePath, parsedPath.name) // /public/[filetype]/[filename] 之前的临时文件
+    const dir = path.join(PATH, parsedPath.name) // /public/[filetype]/[filename] 之前的临时文件
     try {
       fs.accessSync(dir)
     }
@@ -119,11 +110,11 @@ class UploadController {
     // 2.1 排序
     const arr: any[] = []
     files.forEach((file) => {
-      const index = Number(file.split(sign)[1])
+      const index = Number(file.split(SIGN)[1])
       arr[index] = file
     })
     // 2.2 合并文件
-    const mergePath = path.join(filePath, `${parsedPath.name}${parsedPath.ext}`)
+    const mergePath = path.join(PATH, `${parsedPath.name}${parsedPath.ext}`)
     arr.forEach((file) => {
       const targetFile = fs.readFileSync(path.join(dir, file))
       fs.appendFileSync(mergePath, targetFile)
@@ -157,7 +148,7 @@ class UploadController {
     return false
   }
 
-  getUploadabpout() {
+  getUploadabout() {
     if (this.currentType === uploadFile.ASSETS) {
       return {
         path: this.ASSETS_PATH,
