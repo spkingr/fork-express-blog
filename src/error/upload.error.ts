@@ -4,6 +4,7 @@ export enum UploadErrorEnum {
   ERROR_TYPE = 80001,
   ERROR_SIZE = 80002,
   ERROR_FILE_NOT_FOUND = 80003,
+  ERROR_IDENTIFIER = 80004,
 }
 
 export const uploadError = {
@@ -18,5 +19,9 @@ export const uploadError = {
   [UploadErrorEnum.ERROR_FILE_NOT_FOUND]: {
     code: UploadErrorEnum.ERROR_FILE_NOT_FOUND,
     message: '未找到需要合并的文件',
+  },
+  [UploadErrorEnum.ERROR_IDENTIFIER]: {
+    code: UploadErrorEnum.ERROR_IDENTIFIER,
+    message: '上传的文件标识符不正确',
   },
 }

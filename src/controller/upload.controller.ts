@@ -10,44 +10,60 @@ enum uploadFile {
   ARTICLE = 'article',
 }
 
+// 允许的类型
+const ASSETS_TYPE = ['.jpeg', '.jpg', '.png', '.gif', '.webp', '.mp4']
+const ARTICLE_TYPE = ['.md']
+// 允许类型的大小上限
+const ASSETS_SIZE_LIMIT = 1024 * 1024 * 100
+const ARTICLE_SIZE_LIMIT = 1024 * 1024 * 100
+// 各个类型去往哪个文件夹
+const BASE_PATH = path.join(process.cwd(), 'public')
+const ASSETS_PATH = path.join(BASE_PATH, uploadFile.ASSETS)
+const ARTICLE_PATH = path.join(BASE_PATH, uploadFile.ARTICLE)
+// 碎片的标志
+const ASSETS_CHUNK = 'ASSETS_CHUNK'
+const ARTICLE_CHUNK = 'ARTICLE_CHUNK'
+// 策略模式
+const uploadFileOptions = {
+  [uploadFile.ASSETS]: () => ({
+    SIGN: ASSETS_CHUNK,
+    PATH: ASSETS_PATH,
+    SIZE_LIMIT: ASSETS_SIZE_LIMIT,
+    ALLOW_TYPE: ASSETS_TYPE,
+  }),
+  [uploadFile.ARTICLE]: () => ({
+    SIGN: ARTICLE_CHUNK,
+    PATH: ARTICLE_PATH,
+    SIZE_LIMIT: ARTICLE_SIZE_LIMIT,
+    ALLOW_TYPE: ARTICLE_TYPE,
+  }),
+}
+
 // todo
-// 1. 前端分片文件哈希计算
-// 2. 断点续传
-// 3. 秒传
-// 4. 错误重传
+// 1. [x]前端分片文件哈希计算
+// 2. [x]断点续传
+// 3. [o]秒传
+// 4. [x]错误重传
 
 class UploadController {
-  public allowedAssetsType = ['.jpeg', '.jpg', '.png', '.gif', '.webp', '.mp4']
-  public allowedArticleType = ['.md']
-
-  public IMAGE_SIZE_LIMIT = 1024 * 1024 * 10
-  public ARTICLE_SIZE_LIMIT = 1024 * 1024 * 100
-
-  public BASE_PATH = path.join(process.cwd(), 'public')
-  public ASSETS_PATH = path.join(this.BASE_PATH, uploadFile.ASSETS)
-  public ARTICLE_PATH = path.join(this.BASE_PATH, uploadFile.ARTICLE)
-
-  public assetsChunksign = 'IMAGE_CHUNK'
-  public articleChunksign = 'ARTICLE_CHUNK'
-
   private currentType: uploadFile = uploadFile.ASSETS
 
   writeFileToPublic: Middleware = async (req, res, next) => {
     const fileInfo = req.body
     const file = req.files!.file as fileUpload.UploadedFile
 
+    // 获取path和sign
+    const { PATH, SIGN } = uploadFileOptions[this.currentType]()
+
     // 获取文件信息
     const parsedPath = path.parse(fileInfo.name)
 
     // 检查文件类型
-    if (!this.extnameCheck(parsedPath.ext, uploadFile.ASSETS))
+    if (!this.extnameCheck(parsedPath.ext, this.currentType))
       return next(uploadError[UploadErrorEnum.ERROR_TYPE])
     // 检查文件大小
-    if (!this.sizeCheck(fileInfo.size, uploadFile.ASSETS))
+    if (!this.sizeCheck(fileInfo.size, this.currentType))
       return next(uploadError[UploadErrorEnum.ERROR_SIZE])
-
-    // 获取path和sign
-    const { path: PATH, sign: SIGN } = this.getUploadabout()
 
     // 检查是否存在文件夹 /public/images/[filename] 不存在则创建
     const dir = path.join(PATH, parsedPath.name)
@@ -62,6 +78,8 @@ class UploadController {
   uploadAssets: Middleware = async (req, res, next) => {
     const fileInfo = req.body
     this.currentType = uploadFile.ASSETS
+    if (this.identifierCheck(fileInfo.identifier, this.currentType))
+      return next(uploadError[UploadErrorEnum.ERROR_IDENTIFIER])
     // 写入文件碎片
     await this.writeFileToPublic(req, res, next)
     // 返回成功
@@ -77,6 +95,8 @@ class UploadController {
   uploadArticle: Middleware = async (req, res, next) => {
     const fileInfo = req.body
     this.currentType = uploadFile.ASSETS
+    if (this.identifierCheck(fileInfo.identifier, this.currentType))
+      return next(uploadError[UploadErrorEnum.ERROR_IDENTIFIER])
     // 写入文件碎片
     await this.writeFileToPublic(req, res, next)
     // 返回成功
@@ -93,7 +113,7 @@ class UploadController {
     const { name } = req.body
     const parsedPath = path.parse(name)
     // 1. 区分文件类型
-    const { sign: SIGN, path: PATH } = this.getUploadabout()
+    const { SIGN, PATH } = uploadFileOptions[this.currentType]()
     // 2. 找到需要合并的文件 并读取到全部文件信息
     const dir = path.join(PATH, parsedPath.name) // /public/[filetype]/[filename] 之前的临时文件
     try {
@@ -125,46 +145,27 @@ class UploadController {
     res.json({
       code: 200,
       message: '文件合并成功',
+      // 给出path
       data: {
-        path: mergePath.slice(this.BASE_PATH.length),
+        path: mergePath,
       },
     })
   }
 
   // utils ------------------------------------------
   extnameCheck(extname: string, type: uploadFile): boolean {
-    if (type === uploadFile.ASSETS)
-      return this.allowedAssetsType.includes(extname.toLocaleLowerCase())
-    if (type === uploadFile.ARTICLE)
-      return this.allowedArticleType.includes(extname.toLocaleLowerCase())
-    return false
+    return uploadFileOptions[type]().ALLOW_TYPE.includes(extname)
   }
 
   sizeCheck(size: number, type: uploadFile): boolean {
-    if (type === uploadFile.ASSETS)
-      return size <= this.IMAGE_SIZE_LIMIT
-    if (type === uploadFile.ARTICLE)
-      return size <= this.ARTICLE_SIZE_LIMIT
-    return false
+    return size <= uploadFileOptions[type]().SIZE_LIMIT
   }
 
-  getUploadabout() {
-    if (this.currentType === uploadFile.ASSETS) {
-      return {
-        path: this.ASSETS_PATH,
-        sign: this.assetsChunksign,
-      }
-    }
-    if (this.currentType === uploadFile.ARTICLE) {
-      return {
-        path: this.ARTICLE_PATH,
-        sign: this.articleChunksign,
-      }
-    }
-    return {
-      path: '',
-      sign: '',
-    }
+  identifierCheck(identifier: string, type: uploadFile): boolean {
+    // 查看对应文件夹下有没有这个文件
+    const { PATH } = uploadFileOptions[type]()
+    const dir = path.join(PATH, identifier)
+    return fs.existsSync(dir)
   }
 }
 
