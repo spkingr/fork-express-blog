@@ -4,6 +4,7 @@ import { body, validationResult } from 'express-validator'
 import type { ExpressValidator, Middleware } from '../types'
 import { userService } from '../service/user.service.js'
 import { UserErrorEnum, userError } from '../error/user.error.js'
+import { isEmpty } from '../utils/is.js'
 
 /* 用户模块的code都是100xx开头 */
 
@@ -15,7 +16,7 @@ export const userValidateMiddleware: ExpressValidator = [
   body('password').isLength({ min: 6, max: 16 }).withMessage(UserErrorEnum.PSWLENGTH),
   (req, res, next) => {
     const errors = validationResult(req)
-    if (errors) {
+    if (isEmpty(errors)) {
       // 取出第一个错误
       const firstError = errors.array()[0]
       // 找到与第一个错误匹配的枚举类型
