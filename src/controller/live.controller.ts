@@ -1,7 +1,11 @@
 import type { Middleware } from '../types'
 
 class LiveController {
-  getlive: Middleware = async (req, res, next) => {
+  addlive: Middleware = async (req, res, next) => {
     
+  }
+
+  getlive: Middleware = async (req, res, next) => {
+
   }
 }
