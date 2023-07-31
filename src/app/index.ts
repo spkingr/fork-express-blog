@@ -3,6 +3,7 @@ import cors from 'cors'
 import uploader from 'express-fileupload'
 import { userRouter } from '../router/user.route.js'
 import { uploadRouter } from '../router/upload.route.js'
+import { liveRouter } from '../router/live.route.js'
 import { errorHandlerMiddleware } from './errorhandler.js'
 
 const app = express()
@@ -19,6 +20,7 @@ app.use(uploader())
 // Routes
 app.use(userRouter)
 app.use(uploadRouter)
+app.use(liveRouter)
 // Error Handler
 app.use(errorHandlerMiddleware)
 

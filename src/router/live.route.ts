@@ -1,31 +1,32 @@
 import express from 'express'
 import { liveController } from '../controller/live.controller.js'
-import { userTokenCheckMiddleware } from '../middleware/auth.middleware.js'
 
 const router = express.Router()
 const PREFIX = '/live'
 
 enum liveEnum {
-  GETLIVE = 'getlive',
-  ADDLIVE = 'addlive',
-  DELETELIVE = 'deletelive',
-  JOINLIVE = 'joinlive',
+  GETROOM = 'getrooms',
+  ADDROOM = 'addroom',
+  DELETEROOM = 'deleteroom',
+  JOINROOM = 'joinroom',
 }
 
-// getLive
+// getRooms
 router.post(
-  `${PREFIX}/${liveEnum.GETLIVE}`,
+  `${PREFIX}/${liveEnum.GETROOM}`,
   [
-    userTokenCheckMiddleware,
-    liveController.getLive,
-  ], 
-)
-
-// addLive
-router.post(
-  `${PREFIX}/${liveEnum.ADDLIVE}`,
-  [
-    userTokenCheckMiddleware,
-    liveController.addLive,
+    // userTokenCheckMiddleware,
+    liveController.getRooms,
   ],
 )
+
+// addRoom
+router.post(
+  `${PREFIX}/${liveEnum.ADDROOM}`,
+  [
+    // userTokenCheckMiddleware,
+    liveController.createRoom,
+  ],
+)
+
+export const liveRouter = router

@@ -1,11 +1,20 @@
 import type { Middleware } from '../types'
+import { liveService } from '../service/live.service.js'
 
 class LiveController {
-  addlive: Middleware = async (req, res, next) => {
-    
+  createRoom: Middleware = async (req, res, next) => {
+    const data = req.body
+    const meetinginfo = await liveService.createRoom(data)
+    res.json({
+      code: 200,
+      message: '会议创建成功',
+      data: meetinginfo,
+    })
   }
 
-  getlive: Middleware = async (req, res, next) => {
+  getRooms: Middleware = async (req, res, next) => {
 
   }
 }
+
+export const liveController = new LiveController()

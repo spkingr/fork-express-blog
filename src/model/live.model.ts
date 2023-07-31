@@ -5,39 +5,31 @@ import { seq } from '../db/seq.js'
 // 点对点表设计如下：
 // id: [主键] (自增)
 // room_name: varchar(255)
-// room_type: varchar(255)
-// room_owner: varchar(255)
+// room_host: varchar(255)
 // room_member: varchar(255)
 
 export interface LiveAttributes {
-  id?: number
-  room_name: string
-  room_type: string
-  room_owner: string
-  room_member: string
+  host_name: string
+  host_id: string
 }
 
 const Live = seq.define('live', {
-  room_name: {
+  room_id: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-    comment: 'room name',
+    comment: 'room id aka meeting id',
   },
-  room_type: {
+  host_id: {
     type: DataTypes.STRING,
     allowNull: false,
-    comment: 'room type',
+    unique: true,
+    comment: 'host id',
   },
-  room_owner: {
+  host_name: {
     type: DataTypes.STRING,
     allowNull: false,
-    comment: 'room owner',
-  },
-  room_member: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    comment: 'room member',
+    comment: 'room host name',
   },
 })
 
@@ -45,5 +37,3 @@ const Live = seq.define('live', {
 // await Live.sync({ force: true })
 
 export { Live }
-
-

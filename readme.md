@@ -1,1 +1,12 @@
-### 使用express搭建一个blog-api模板
+### express template
+
+#### develop
+run : 
+```
+nodemon
+```
+or :
+```
+npm run dev
+```
+
