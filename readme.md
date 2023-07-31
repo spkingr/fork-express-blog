@@ -5,8 +5,4 @@ run :
 ```
 nodemon
 ```
-or :
-```
-npm run dev
-```
 
