@@ -16,7 +16,6 @@ enum liveEnum {
 router.post(
   `${PREFIX}/${liveEnum.GETROOM}`,
   [
-    // userTokenCheckMiddleware,
     liveController.getRooms,
   ],
 )
@@ -25,7 +24,6 @@ router.post(
 router.post(
   `${PREFIX}/${liveEnum.ADDROOM}`,
   [
-    // userTokenCheckMiddleware,
     ...createLiveValidateMiddleware,
     liveController.createRoom,
   ],

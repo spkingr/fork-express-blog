@@ -9,7 +9,7 @@ export const createLiveValidateMiddleware: ExpressValidator = [
   body('host_id').isLength({ min: 2, max: 20 }).withMessage(LiveErrorEnum.ERROR_HOST),
   body('host_name').isLength({ min: 2, max: 20 }).withMessage(LiveErrorEnum.ERROR_HOST),
   (req, res, next) => {
-    const errors = validationResult(req.body)
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
       // 取出第一个错误
       const firstError = errors.array()[0]
