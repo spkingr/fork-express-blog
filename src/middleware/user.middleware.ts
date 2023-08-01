@@ -16,7 +16,7 @@ export const userValidateMiddleware: ExpressValidator = [
   body('password').isLength({ min: 6, max: 16 }).withMessage(UserErrorEnum.PSWLENGTH),
   (req, res, next) => {
     const errors = validationResult(req)
-    if (isEmpty(errors)) {
+    if (!isEmpty(errors)) {
       // 取出第一个错误
       const firstError = errors.array()[0]
       // 找到与第一个错误匹配的枚举类型

@@ -1,5 +1,6 @@
 import express from 'express'
 import { liveController } from '../controller/live.controller.js'
+import { createLiveValidateMiddleware } from '../middleware/live.middleware.js'
 
 const router = express.Router()
 const PREFIX = '/live'
@@ -25,6 +26,7 @@ router.post(
   `${PREFIX}/${liveEnum.ADDROOM}`,
   [
     // userTokenCheckMiddleware,
+    ...createLiveValidateMiddleware,
     liveController.createRoom,
   ],
 )
