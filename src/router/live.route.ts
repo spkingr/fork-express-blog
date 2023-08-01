@@ -6,10 +6,10 @@ const router = express.Router()
 const PREFIX = '/live'
 
 enum liveEnum {
-  GETROOM = 'getrooms',
-  ADDROOM = 'addroom',
-  DELETEROOM = 'deleteroom',
-  JOINROOM = 'joinroom',
+  GETROOM = 'getRooms',
+  ADDROOM = 'addRoom',
+  DELETEROOM = 'deleteRoom',
+  JOINROOM = 'joinRoom',
 }
 
 // getRooms
