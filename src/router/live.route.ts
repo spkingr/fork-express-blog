@@ -1,6 +1,6 @@
 import express from 'express'
 import { liveController } from '../controller/live.controller.js'
-import { createLiveValidateMiddleware } from '../middleware/live.middleware.js'
+import { createRoomValidateMiddleware, queryRoomValidateMiddleware } from '../middleware/live.middleware.js'
 
 const router = express.Router()
 const PREFIX = '/live'
@@ -9,23 +9,39 @@ enum liveEnum {
   GETROOM = 'getRooms',
   ADDROOM = 'addRoom',
   DELETEROOM = 'deleteRoom',
-  JOINROOM = 'joinRoom',
+  QUERYROOM = 'queryRoom',
 }
 
-// getRooms
-router.post(
+/**
+ * @params null
+ * @return {Array} rooms
+ */
+router.get(
   `${PREFIX}/${liveEnum.GETROOM}`,
   [
     liveController.getRooms,
   ],
 )
 
-// addRoom
+/**
+ * @params {string} host_id
+ * @params {string} host_name
+ * @return {Object} roominfo
+ * @description create a room
+ */
 router.post(
   `${PREFIX}/${liveEnum.ADDROOM}`,
   [
-    ...createLiveValidateMiddleware,
+    ...createRoomValidateMiddleware,
     liveController.createRoom,
+  ],
+)
+
+router.post(
+  `${PREFIX}/${liveEnum.QUERYROOM}`,
+  [
+    ...queryRoomValidateMiddleware,
+    liveController.queryRoom,
   ],
 )
 

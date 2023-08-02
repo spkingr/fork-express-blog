@@ -14,6 +14,13 @@ class LiveService {
     })
     return res.dataValues
   }
+
+  async queryRoom(room_id: string) {
+    const res = await Live.findOne({
+      where: { room_id },
+    })
+    return res ? res.dataValues : null
+  }
 }
 
 export const liveService = new LiveService()

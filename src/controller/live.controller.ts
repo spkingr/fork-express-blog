@@ -12,6 +12,16 @@ class LiveController {
     })
   }
 
+  queryRoom: Middleware = async (req, res, next) => {
+    const { room_id } = req.body
+    const checkinfo = await liveService.queryRoom(room_id)
+    return res.json({
+      code: 200,
+      message: '会议查询成功',
+      data: checkinfo,
+    })
+  }
+
   getRooms: Middleware = async (req, res, next) => {
 
   }
