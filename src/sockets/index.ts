@@ -22,35 +22,28 @@ export function setupSocketIO(server: any) {
     socket.on('join', (data) => {
       const { memberId } = data
       const client = io.sockets.sockets.get(memberId)
-      // 广播通知所有人
-      client?.emit('joined', { type: 'self', messgae: '您已进入房间' })
-      // other ...
+      if (!client)
+        return console.error('memberId is not exist')
+      client.emit('joined', { type: 'self', messgae: '您已进入房间' })
     })
 
     /* 其它用户进入房间（连上socket） */
-    socket.on('member-joined', (data) => {
-      const { name, memberId } = data
-      if (memberId === socket.id)
-        return
-      // 广播通知所有人
-      io.emit('member-joined', { type: 'broadcast', messgae: `${name}已进入房间` })
-      // other ...
-    })
+    io.emit('member-joined', { type: 'broadcast', messgae: socket.id })
 
     /* 用户发送消息事件 */ // 这里的发送存在问题
     socket.on('message-to-peer', (data) => {
       const { memberId, type } = data
-
+      // 有一端发来了offer 则把offer发送给其他人
       if (type === 'offer') {
-        io.sockets.sockets.forEach((socket) => {
-          if (socket.id !== memberId)
-            socket.emit('message-from-peer', { ...data, memberId: socket.id })
+        io.sockets.sockets.forEach((client) => {
+          if (client.id !== memberId)
+            client.emit('message-from-peer', { ...data, memberId: client.id })
         })
       }
-
+      // 有一端发来了answer 则把answer发送给offer对象
       if (type === 'answer') {
         const client = io.sockets.sockets.get(memberId)
-        client?.emit('message-from-peer', { ...data, memberId: socket.id })
+        client?.emit('message-from-peer', { ...data, memberId })
       }
     })
   })
