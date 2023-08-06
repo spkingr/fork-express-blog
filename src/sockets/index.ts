@@ -54,22 +54,24 @@ export function setupSocketIO(server: any) {
      * @memberId 用户id
      * @type 消息类型 offer | answer | candidate
      */
-    socket.on('message-to-peer', (data) => {
+    socket.on('message-to-peer', (data) => { // socket.id是本端的id socket是本端的socket实例
       const { memberId, type } = data // 这个memberId是对端的id
 
-      const client = io.sockets.sockets.get(memberId)
+      const client = io.sockets.sockets.get(memberId) // 获取对端的socket实例
+
       if (!client)
-        return console.error('memberId is not exist')
+        return console.error('client is not exist')
 
-      if (type === 'offer') {
-        client.emit('message-from-peer', { ...data, memberId: socket.id })
-        console.log('--- offer ---', client.id, memberId)
-      }
-      if (type === 'answer')
-        client.emit('message-from-peer', { ...data, memberId: socket.id })
+      client.emit('message-from-peer', { ...data, memberId: socket.id })
 
-      if (type === 'candidate')
-        client.emit('message-from-peer', { ...data, memberId: socket.id })
+      // if (type === 'offer')
+      //   client.emit('message-from-peer', { ...data, memberId: socket.id })
+
+      // if (type === 'answer')
+      //   client.emit('message-from-peer', { ...data, memberId: socket.id })
+
+      // if (type === 'candidate')
+      //   client.emit('message-from-peer', { ...data, memberId: socket.id })
     })
   })
 }
