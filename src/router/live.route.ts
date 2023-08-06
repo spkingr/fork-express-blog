@@ -37,6 +37,11 @@ router.post(
   ],
 )
 
+/**
+ * @params {string} room_id
+ * @return {Object} roominfo
+ * @description delete a room
+ */
 router.post(
   `${PREFIX}/${liveEnum.QUERYROOM}`,
   [

@@ -11,40 +11,65 @@ export function setupSocketIO(server: any) {
   io.on('connection', (socket) => {
     console.warn('--- a user connected ---', socket.id)
 
-    /* 用户断开链接 */
+    /**
+     * @event disconnect 当用户断开连接时
+     * @description 事件描述
+     * @type 事件类型
+     * @message 信息 断开时传入用户信息即可
+     */
     socket.on('disconnect', (data: any) => {
       const { name } = data
-      io.emit('member-disconnect', { type: 'broadcast', message: `${name}已离开房间` })
+      io.emit('member-disconnect', { type: 'broadcast' })
       // other ...
     })
 
-    /* 本地用户进入房间 */
+    /**
+     * @event join 当本地用户进入房间时
+     * @memberId 用户id
+     * @description 事件描述
+     * @type 事件类型
+     * @message 信息 客户端一般会传过来用户基本信息 携带一个用户id 即客户端的socket.id
+     */
     socket.on('join', (data) => {
       const { memberId } = data
       const client = io.sockets.sockets.get(memberId)
       if (!client)
         return console.error('memberId is not exist')
-      client.emit('joined', { type: 'self', messgae: '您已进入房间' })
+      client.emit('joined', { type: 'self' })
     })
 
-    /* 其它用户进入房间（连上socket） */
-    io.emit('member-joined', { type: 'broadcast', messgae: socket.id })
+    /**
+     * @event member-joined 当其他用户进入房间时
+     * @message 信息
+     * @description 事件描述
+     * @type 事件类型
+     * @memberId 用户id
+     */
+    io.emit('member-joined', { type: 'broadcast', memberId: socket.id })
 
-    /* 用户发送消息事件 */ // 这里的发送存在问题
+    /**
+     * @event message-to-peer 当有一端发来了消息时 这是webrtc的信令过程
+     * @message 信息
+     * @description 事件描述
+     * @memberId 用户id
+     * @type 消息类型 offer | answer | candidate
+     */
     socket.on('message-to-peer', (data) => {
-      const { memberId, type } = data
-      // 有一端发来了offer 则把offer发送给其他人
+      const { memberId, type } = data // 这个memberId是对端的id
+
+      const client = io.sockets.sockets.get(memberId)
+      if (!client)
+        return console.error('memberId is not exist')
+
       if (type === 'offer') {
-        io.sockets.sockets.forEach((client) => {
-          if (client.id !== memberId)
-            client.emit('message-from-peer', { ...data, memberId: client.id })
-        })
+        client.emit('message-from-peer', { ...data, memberId: socket.id })
+        console.log('--- offer ---', client.id, memberId)
       }
-      // 有一端发来了answer 则把answer发送给offer对象
-      if (type === 'answer') {
-        const client = io.sockets.sockets.get(memberId)
-        client?.emit('message-from-peer', { ...data, memberId })
-      }
+      if (type === 'answer')
+        client.emit('message-from-peer', { ...data, memberId: socket.id })
+
+      if (type === 'candidate')
+        client.emit('message-from-peer', { ...data, memberId: socket.id })
     })
   })
 }
