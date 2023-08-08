@@ -6,6 +6,9 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
+  "scripts": {
+    "dev:debug": "nodemon --inspect ./src/main.ts"
+  },
   "peerDependencies": {
     "eslint": "8.38.0"
   },
