@@ -1,7 +1,5 @@
 import type { Server, Socket } from 'socket.io'
 
-const userMap = new Map() // user id -> socket
-
 export function addListeners(socket: Socket, io: Server) {
   let time = new Date()
   // log
@@ -27,29 +25,26 @@ export function addListeners(socket: Socket, io: Server) {
    * @message 信息 客户端一般会传过来用户基本信息 携带一个用户id 即客户端的socket.id
    */
   socket.on('join', (data) => {
-    const { memberId, __id__ } = data
-    const client = io.sockets.sockets.get(memberId)
+    const { memberId } = data
 
+    // 给自己发消息
+    const client = io.sockets.sockets.get(memberId)
     if (!client)
       return console.error('memberId is not exist')
-
-    userMap.set(__id__, socket)
     client.emit('joined', { type: 'self' })
+
+    // 给其他人发消息
+    const clients = [...io.sockets.sockets.values()]
+    clients.forEach((client) => {
+      if (client.id !== memberId)
+        client.emit('member-joined', { type: 'broadcast', memberId })
+    })
 
     // 心跳包
     setInterval(() => {
       client.emit('heartbeat', { type: 'self' })
     }, 3000)
   })
-
-  /**
-   * @event member-joined 当其他用户进入房间时
-   * @message 信息
-   * @description 事件描述
-   * @type 事件类型
-   * @memberId 用户id
-   */
-  io.emit('member-joined', { type: 'broadcast', memberId: socket.id })
 
   /**
    * @event message-to-peer 当有一端发来了消息时 这是webrtc的信令过程
