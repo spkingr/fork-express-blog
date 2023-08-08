@@ -6,7 +6,7 @@ import { seq } from '../db/seq.js'
 // id: [主键] (自增)
 // room_name: varchar(255)
 // room_host: varchar(255)
-// room_member: varchar(255)
+// room_capacity: int
 
 export interface LiveAttributes {
   host_name: string
@@ -30,6 +30,12 @@ const Live = seq.define('live', {
     type: DataTypes.STRING,
     allowNull: false,
     comment: 'room host name',
+  },
+  room_capacity: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: 2,
+    comment: 'room capacity',
   },
 })
 
