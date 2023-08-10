@@ -1,9 +1,27 @@
 import type { Server, Socket } from 'socket.io'
+import { liveService } from '../service/live.service.js'
+
+const HEART_BEAT_INTERVAL = 20 * 1000
+const HEART_BEAT_TIMEOUT = 60 * 1000
 
 export function addListeners(socket: Socket, io: Server) {
-  let time = new Date()
-  // log
-  console.warn('--- a user connected ---', socket.id)
+  function leave(roomID: string, socket: Socket) {
+    if (!roomID)
+      return console.warn('[leave error:] roomID is required;')
+    // 删除用户
+    io.sockets.sockets.delete(socket.id)
+    // 操作数据库删除用户
+    liveService.removeMember(roomID)
+    // 退出房间
+    socket.leave(roomID)
+  }
+
+  function removeRoom(roomID: string) {
+    // 删除房间
+    io.sockets.adapter.rooms.delete(roomID)
+    // 操作数据库删除房间
+    liveService.removeRoom(roomID)
+  }
 
   /**
    * @event disconnect 当用户断开连接时
@@ -12,9 +30,8 @@ export function addListeners(socket: Socket, io: Server) {
    * @message 信息 断开时传入用户信息即可
    */
   socket.on('disconnect', (data: any) => {
+    // 断开链接
     io.emit('member-disconnect', { type: 'broadcast' })
-    // 删除用户
-    io.sockets.sockets.delete(socket.id)
   })
 
   /**
@@ -25,41 +42,37 @@ export function addListeners(socket: Socket, io: Server) {
    * @message 信息 客户端一般会传过来用户基本信息 携带一个用户id 即客户端的socket.id
    */
   socket.on('join', (data) => {
-    const { memberId } = data
+    const { roomID } = data
+    // 操作数据库加入房间
+    liveService.addMember(roomID)
+    // 给socket绑定房间
+    socket.join(roomID)
 
-    // 给自己发消息
-    const client = io.sockets.sockets.get(memberId)
-    if (!client)
-      return console.error('memberId is not exist')
-    client.emit('joined', { type: 'self' })
-
-    // 给其他人发消息
-    const clients = [...io.sockets.sockets.values()]
-    clients.forEach((client) => {
-      if (client.id !== memberId)
-        client.emit('member-joined', { type: 'broadcast', memberId })
-    })
+    // 给房间除自己外的其他人发消息
+    socket.to(roomID).emit(
+      'member-joined',
+      { type: 'broadcast', memberId: socket.id },
+    )
 
     // 心跳包
     setInterval(() => {
-      client.emit('heartbeat', { type: 'self' })
-    }, 3000)
+      socket.emit('heartbeat', { type: 'self' })
+    }, HEART_BEAT_INTERVAL)
   })
 
   /**
-   * @event message-to-peer 当有一端发来了消息时 这是webrtc的信令过程
+   * @event message-to-peer 当有一端发来了消息
    * @message 信息
    * @description 事件描述
    * @memberId 用户id
    * @type 消息类型 offer | answer | candidate
    */
   socket.on('message-to-peer', (data) => {
-    const { memberId, type } = data
-    const client = io.sockets.sockets.get(memberId)
-    if (!client)
-      return console.error('client is not exist')
-
-    client.emit('message-from-peer', { ...data, memberId: socket.id })
+    const { roomID } = data
+    socket.to(roomID).emit(
+      'message-from-peer',
+      { ...data, memberId: socket.id },
+    )
   })
 
   /**
@@ -67,20 +80,30 @@ export function addListeners(socket: Socket, io: Server) {
    * @description 事件描述
    * 当有一端离开房间时，需要删除用户
    */
-  socket.on('leave', () => {
-    // 删除用户
-    io.sockets.sockets.delete(socket.id)
+  socket.on('leave', (data) => {
+    const { roomID } = data
+    leave(roomID, socket)
   })
 
   /**
+   * @event close-room 当主播离开房间时
+   * @description 事件描述
+   * 当主播离开房间时，需要删除房间
+   */
+  socket.on('close-room', (data) => {
+    const { roomID } = data
+    // 对房间内的其他人广播关闭房间
+    socket.to(roomID).emit('room-closed', { type: 'broadcast' })
+    removeRoom(roomID)
+  })
+
+  /**
+   * todo --------------------------------
    * @event heartbeat 心跳包
    * @description 事件描述
    * 当服务端十秒内没有收到客户端的心跳包时，删除用户
    */
   socket.on('heartbeat', () => {
-    const now = new Date()
-    if (now.getTime() - time.getTime() > 10000)
-      io.sockets.sockets.delete(socket.id)
-    time = new Date()
+    // ...
   })
 }

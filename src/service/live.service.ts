@@ -21,6 +21,38 @@ class LiveService {
     })
     return res ? res.dataValues : null
   }
+
+  async addMember(room_id: string) {
+    const res = await Live.findOne({
+      where: { room_id },
+    })
+    if (res) {
+      const { member_count } = res.dataValues
+      await Live.update(
+        { member_count: member_count + 1 },
+        { where: { room_id } },
+      )
+    }
+  }
+
+  async removeMember(room_id: string) {
+    const res = await Live.findOne({
+      where: { room_id },
+    })
+    if (res) {
+      const { member_count } = res.dataValues
+      await Live.update(
+        { member_count: member_count - 1 },
+        { where: { room_id } },
+      )
+    }
+  }
+
+  async removeRoom(room_id: string) {
+    await Live.destroy({
+      where: { room_id },
+    })
+  }
 }
 
 export const liveService = new LiveService()
