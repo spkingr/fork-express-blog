@@ -5,12 +5,14 @@ const HEART_BEAT_INTERVAL = 20 * 1000
 const HEART_BEAT_TIMEOUT = 60 * 1000
 
 export function addListeners(socket: Socket, io: Server) {
+  let time = new Date().getTime()
+
   function leave(roomID: string, socket: Socket) {
     if (!roomID)
       return console.warn('[leave error:] roomID is required;')
     // 删除用户
     io.sockets.sockets.delete(socket.id)
-    // 操作数据库删除用户
+    // 操作数据库用户-1
     liveService.removeMember(roomID)
     // 退出房间
     socket.leave(roomID)
@@ -43,7 +45,7 @@ export function addListeners(socket: Socket, io: Server) {
    */
   socket.on('join', (data) => {
     const { roomID } = data
-    // 操作数据库加入房间
+    // 操作数据库人数+1
     liveService.addMember(roomID)
     // 给socket绑定房间
     socket.join(roomID)
@@ -98,12 +100,18 @@ export function addListeners(socket: Socket, io: Server) {
   })
 
   /**
-   * todo --------------------------------
    * @event heartbeat 心跳包
    * @description 事件描述
-   * 当服务端十秒内没有收到客户端的心跳包时，删除用户
+   * 当服务端一定时间内没有收到客户端的心跳包时，删除用户
    */
   socket.on('heartbeat', () => {
-    // ...
+    const now = new Date().getTime()
+    if (now - time > HEART_BEAT_TIMEOUT) {
+      // 一开始想在这里做点操作，但是发现这里的socket已经断开了，所以没有房间id了，无法操作数据库
+      // 目前就打算做定期销毁
+      // ...
+    }
+
+    time = now
   })
 }

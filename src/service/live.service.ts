@@ -53,6 +53,13 @@ class LiveService {
       where: { room_id },
     })
   }
+
+  async clearRoom() {
+    // 清空所有人数为0的房间
+    await Live.destroy({
+      where: { member_count: 0 },
+    })
+  }
 }
 
 export const liveService = new LiveService()
