@@ -1,7 +1,7 @@
 import CryptoJS from 'crypto-js'
 import { body, validationResult } from 'express-validator'
 
-import type { ExpressValidator, Middleware } from '../types'
+import type { ExpressValidator, Middleware } from '../../types'
 import { userService } from '../service/user.service.js'
 import { UserErrorEnum, userError } from '../error/user.error.js'
 

@@ -1,6 +1,6 @@
 import { body, validationResult } from 'express-validator'
 import { LiveErrorEnum, liveError } from '../error/live.error.js'
-import type { ExpressValidator } from '../types'
+import type { ExpressValidator } from '../../types'
 
 /*
  * 创建房间

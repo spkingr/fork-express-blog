@@ -1,4 +1,4 @@
-import type { Middleware } from '../types'
+import type { Middleware } from '../../types'
 import { liveService } from '../service/live.service.js'
 
 class LiveController {

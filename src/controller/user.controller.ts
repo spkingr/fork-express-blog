@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import type { Middleware } from '../types'
+import type { Middleware } from '../../types'
 import { userService } from '../service/user.service.js'
 import { parsed } from '../config/index.js'
 import { UserErrorEnum, userError } from '../error/user.error.js'

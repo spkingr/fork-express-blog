@@ -1,4 +1,4 @@
-import type { ErrorMiddleware } from '../types'
+import type { ErrorMiddleware } from '../../types'
 
 export const errorHandlerMiddleware: ErrorMiddleware = (err, req, res, next) => {
   if (err) {

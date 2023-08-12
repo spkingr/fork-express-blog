@@ -2,7 +2,7 @@ import path from 'node:path'
 import fs from 'node:fs'
 import { rimraf } from 'rimraf'
 import type fileUpload from 'express-fileupload'
-import type { Middleware } from '../types'
+import type { Middleware } from '../../types'
 import { UploadErrorEnum, uploadError } from '../error/upload.error.js'
 
 enum uploadFile {
