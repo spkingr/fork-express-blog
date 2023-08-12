@@ -21,6 +21,45 @@ class LiveService {
     })
     return res ? res.dataValues : null
   }
+
+  async addMember(room_id: string) {
+    const res = await Live.findOne({
+      where: { room_id },
+    })
+    if (res) {
+      const { member_count } = res.dataValues
+      await Live.update(
+        { member_count: member_count + 1 },
+        { where: { room_id } },
+      )
+    }
+  }
+
+  async removeMember(room_id: string) {
+    const res = await Live.findOne({
+      where: { room_id },
+    })
+    if (res) {
+      const { member_count } = res.dataValues
+      await Live.update(
+        { member_count: member_count - 1 },
+        { where: { room_id } },
+      )
+    }
+  }
+
+  async removeRoom(room_id: string) {
+    await Live.destroy({
+      where: { room_id },
+    })
+  }
+
+  async clearRoom() {
+    // 清空所有人数为0的房间
+    await Live.destroy({
+      where: { member_count: 0 },
+    })
+  }
 }
 
 export const liveService = new LiveService()

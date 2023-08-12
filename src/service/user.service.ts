@@ -37,9 +37,7 @@ class UserService {
     info.password = CryptoJS.SHA256(info.password!).toString() // 这一步可能会出error
     const res = await User.update(
       { ...info },
-      {
-        where: { id },
-      },
+      { where: { id } },
     )
     return res[0]
   }

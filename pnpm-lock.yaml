@@ -28,6 +28,9 @@ dependencies:
   '@types/multer':
     specifier: ^1.4.7
     version: 1.4.7
+  '@types/node-cron':
+    specifier: ^3.0.8
+    version: 3.0.8
   '@types/uuid':
     specifier: ^9.0.2
     version: 9.0.2
@@ -64,6 +67,9 @@ dependencies:
   mysql2:
     specifier: ^3.3.4
     version: 3.3.4
+  node-cron:
+    specifier: ^3.0.2
+    version: 3.0.2
   nodemon:
     specifier: ^2.0.22
     version: 2.0.22
@@ -403,6 +409,10 @@ packages:
     resolution: {integrity: sha512-/SNsDidUFCvqqcWDwxv2feww/yqhNeTRL5CVoL3jU4Goc4kKEL10T7Eye65ZqPNi4HRx8sAEX59pV1aEH7drNA==}
     dependencies:
       '@types/express': 4.17.17
+    dev: false
+
+  /@types/node-cron@3.0.8:
+    resolution: {integrity: sha512-+z5VrCvLwiJUohbRSgHdyZnHzAaLuD/E2bBANw+NQ1l05Crj8dIxb/kKK+OEqRitV2Wr/LYLuEBenGDsHZVV5Q==}
     dev: false
 
   /@types/node@20.2.5:
@@ -2545,6 +2555,13 @@ packages:
   /negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /node-cron@3.0.2:
+    resolution: {integrity: sha512-iP8l0yGlNpE0e6q1o185yOApANRe47UPbLf4YxfbiNHt/RU5eBcGB/e0oudruheSf+LQeDMezqC5BVAb5wwRcQ==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      uuid: 8.3.2
     dev: false
 
   /nodemon@2.0.22:

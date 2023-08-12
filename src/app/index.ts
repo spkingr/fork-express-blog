@@ -5,6 +5,7 @@ import { userRouter } from '../router/user.route.js'
 import { uploadRouter } from '../router/upload.route.js'
 import { liveRouter } from '../router/live.route.js'
 import { errorHandlerMiddleware } from './errorhandler.js'
+import { setupCron } from './cron.js'
 
 const app = express()
 
@@ -23,6 +24,8 @@ app.use(uploadRouter)
 app.use(liveRouter)
 // Error Handler
 app.use(errorHandlerMiddleware)
+
+setupCron()
 
 // export
 export default app
